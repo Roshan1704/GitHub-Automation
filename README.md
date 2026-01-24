@@ -407,4 +407,4 @@ This is a reference implementation. For improvements, please:
 
 ---
 
-**This framework is designed to showcase how a senior QA architect approaches real-world testing challenges.**
+**This framework is designed to showcase how a senior QA approaches real-world testing challenges.**
