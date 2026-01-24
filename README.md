@@ -360,8 +360,8 @@ public void testSearch() {
 
 ## 👤 Author
 
-**Senior QA Architect** | Production-grade E2E Automation  
-GitHub: [your-github-profile]
+**Senior QA Engineer** | Production-grade E2E Automation  
+GitHub: https://github.com/Roshan1704
 
 ---
 
