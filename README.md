@@ -103,7 +103,7 @@ github-e2e-qa/
 
 ## 📋 Prerequisites
 
-- **Java 11+** (LTS)
+- **Java 17+** (LTS)
 - **Maven 3.8+**
 - **Chrome or Firefox** (latest version)
 - **Git**
