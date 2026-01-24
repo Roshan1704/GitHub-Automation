@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="GitHub QA Automation Suite - 150+ Test Cases"
+       verbose="2"
+       parallel="tests"
+       thread-count="4">
+
+    <!-- ===================================================== -->
+    <!-- TIER 1: FOUNDATION E2E QA - SMOKE & FUNCTIONAL TESTS -->
+    <!-- ===================================================== -->
+
+    <test name="HomePageTest - TIER 1 (5 TCs)">
+        <groups>
+            <run>
+                <include name="smoke"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.HomePageTest"/>
+        </classes>
+    </test>
+
+    <test name="SearchTest - TIER 1 (6 TCs)">
+        <groups>
+            <run>
+                <include name="functional"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.SearchTest"/>
+        </classes>
+    </test>
+
+    <test name="ProfilePageTest - TIER 1 (23 TCs)">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="functional"/>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.ProfilePageTest"/>
+        </classes>
+    </test>
+
+    <test name="IssueAndPullRequestTest - TIER 1 (34 TCs)">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="functional"/>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.IssueAndPullRequestTest"/>
+        </classes>
+    </test>
+
+    <test name="DiscoverAndNotificationsTest - TIER 1 (28 TCs)">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="functional"/>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.DiscoverAndNotificationsTest"/>
+        </classes>
+    </test>
+
+    <test name="SettingsPageTest - TIER 1 (29 TCs)">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="functional"/>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.SettingsPageTest"/>
+        </classes>
+    </test>
+
+    <!-- ================================= -->
+    <!-- TIER 3: API & SYSTEM LEVEL TESTS -->
+    <!-- ================================= -->
+
+    <test name="ComprehensiveAPITest - TIER 3 (58 TCs)">
+        <groups>
+            <run>
+                <include name="api"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.ComprehensiveAPITest"/>
+        </classes>
+    </test>
+
+    <test name="ExtendedAPITest - TIER 3 (25+ TCs)">
+        <groups>
+            <run>
+                <include name="api"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.github.qa.tests.ExtendedAPITest"/>
+        </classes>
+    </test>
+
+    <!-- ================= -->
+    <!-- LEGACY TEST SUITE -->
+    <!-- ================= -->
+
+    <test name="APITest - Legacy">
+        <classes>
+            <class name="com.github.qa.tests.APITest"/>
+        </classes>
+    </test>
+
+</suite>
