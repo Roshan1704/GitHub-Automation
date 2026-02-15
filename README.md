@@ -120,3 +120,17 @@ This project demonstrates:
 
 **Roshan Singh**  
 Senior QA / Automation Engineer
+
+## 📚 Documentation
+- Quickstart: `QUICKSTART.md`
+- Consolidated guide: `docs/PROJECT_GUIDE.md`
+
+
+## ✅ Recommended Optimization Approach
+For your prompt ("make it product-grade" + reduce markdown clutter), the best approach is:
+1. Keep **3 active docs** only: `README.md`, `QUICKSTART.md`, `docs/PROJECT_GUIDE.md`.
+2. Merge overlapping content into `docs/PROJECT_GUIDE.md` instead of maintaining many partial summaries.
+3. Keep build configuration production-ready (test/report plugins enabled) while removing brittle dependency BOM usage.
+
+This gives lower maintenance cost without losing usability for onboarding and execution.
+
