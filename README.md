@@ -1,136 +1,91 @@
-# GitHub Automation Framework
+# Stripe Test Automation Framework
 
-## 🚀 Real-World Platform QA for GitHub Engineering Workflows
+Production-grade Java 17 automation framework for Stripe test-mode workflows covering UI, API, and webhook validation.
 
-This repository contains a **production-grade QA automation framework** built to validate **real GitHub engineering workflows** using **public APIs and public UI surfaces**.
+## Tech Stack
+- Java 17+
+- Maven
+- Selenium WebDriver
+- REST Assured
+- TestNG
+- Cucumber BDD + POM
+- Jackson
+- SLF4J + Logback
+- Allure reporting
+- GitHub Actions CI/CD
 
-This is **not a demo project**.
-It is designed to demonstrate how **senior QA / SDET / Platform QA engineers** think about **quality at system level**, not just feature testing.
-
----
-
-## 🎯 Why This Project Exists
-
-Most automation examples focus on isolated UI flows or mock APIs.
-
-In real companies, quality breaks when:
-- Pull requests fail silently
-- APIs drift from expected contracts
-- CI pipelines give false confidence
-- Platform changes impact multiple teams
-
-This framework focuses on **confidence-building automation** for **developer platforms**.
-
----
-
-## 🧩 What This Framework Tests (Real & Ethical)
-
-### ✅ Platform Workflows
-- Public repository discovery & validation
-- Repository metadata consistency
-- Pull request lifecycle (read-only validation)
-- Issues & workflow visibility
-
-### ✅ API-First Quality
-- GitHub REST API contract validation
-- Status codes, schemas, pagination
-- Error handling (404, 403, 429, 5xx)
-- API ↔ UI consistency checks
-
-### ✅ Release Readiness Signals
-- Critical workflow availability
-- API health checks
-- Performance baselines
-- Failure aggregation for go/no-go decisions
-
----
-
-## ❌ What This Framework Explicitly Does NOT Do
-
-- ❌ No authentication abuse
-- ❌ No account creation/deletion
-- ❌ No data scraping
-- ❌ No rate-limit stress testing
-- ❌ No destructive actions
-
-This project follows **ethical, read-only testing principles**.
-
----
-
-## 🏗️ Architecture Overview
-
-```
-┌────────────────────────────┐
-│   Test Scenarios Layer     │
-│  (Repo, PR, Issues)       │
-└────────────▲───────────────┘
-             │
-┌────────────┴───────────────┐
-│   Test Logic Layer         │
-│  (Assertions, Flows)      │
-└────────────▲───────────────┘
-             │
-┌────────────┴───────────────┐
-│   API & UI Client Layer   │
-│  (GitHub REST + UI)       │
-└────────────▲───────────────┘
-             │
-┌────────────┴───────────────┐
-│   Config & CI Layer       │
-│  (Env, Tokens, Pipelines)│
-└────────────────────────────┘
+## Folder Structure
+```text
+src
+├── main/java/com/stripe/automation
+│   ├── api
+│   ├── base
+│   ├── config
+│   ├── drivers
+│   ├── model
+│   ├── ui/pages
+│   ├── utils
+│   └── webhook
+└── test
+    ├── java/com/stripe/automation
+    │   ├── hooks
+    │   ├── listeners
+    │   ├── runners
+    │   ├── stepdefinitions
+    │   └── tests
+    └── resources
+        ├── config
+        ├── testdata/features/ui
+        ├── testdata/api/schemas
+        └── testng.xml
 ```
 
----
+## Stripe Coverage
+### UI
+- Login to Stripe dashboard
+- Validate payments page
+- Search payment
+- Validate refund status
+- Validate filters/pagination
 
-## 🛠️ Tech Stack
+### API
+- Create payment intent
+- Confirm payment
+- Failed payment scenario
+- Full/partial and duplicate refund validation
+- Idempotency validation
+- Invalid/expired key negative test
+- Rate limit handling
 
-- Java  
-- Selenium 4  
-- REST Assured  
-- TestNG  
-- Maven  
-- GitHub Actions  
-- Allure  
+### Webhook
+- Java HTTP receiver endpoint
+- Signature verification
+- Duplicate event idempotency handling
+- Replay/retry validation hooks
 
----
+## Prerequisites
+Set environment variables:
+- `STRIPE_SECRET_KEY`
+- `STRIPE_UI_EMAIL`
+- `STRIPE_UI_PASSWORD`
+- `STRIPE_WEBHOOK_SECRET`
 
-## 🔄 CI/CD Integration
+## Run Commands
+```bash
+mvn clean test
+mvn -Ptest -Dgroups=api test
+mvn -Ptest -Dgroups=webhook test
+mvn -Ptest -Dbrowser=firefox -Dheadless=true test
+mvn allure:serve
+```
 
-Designed to run:
-- On every PR
-- On scheduled regression runs
-- As a **quality gate** before release
+## Stripe CLI webhook testing
+```bash
+stripe login
+stripe listen --forward-to localhost:9090/webhook
+stripe trigger payment_intent.succeeded
+stripe events resend <event_id>
+```
 
----
-
-## 🧠 Engineering Mindset
-
-This project demonstrates:
-- API-first validation over brittle UI-only tests
-- Quality gates instead of pass/fail test lists
-- Confidence-based release decisions
-
-> _Quality engineering is not about finding bugs late.  
-> It’s about building systems that make failures obvious — early._
-
----
-
-## 👤 Author
-
-**Roshan Singh**  
-Senior QA / Automation Engineer
-
-## 📚 Documentation
-- Quickstart: `QUICKSTART.md`
-- Consolidated guide: `docs/PROJECT_GUIDE.md`
-
-
-## ✅ Recommended Optimization Approach
-For your prompt ("make it product-grade" + reduce markdown clutter), the best approach is:
-1. Keep **3 active docs** only: `README.md`, `QUICKSTART.md`, `docs/PROJECT_GUIDE.md`.
-2. Merge overlapping content into `docs/PROJECT_GUIDE.md` instead of maintaining many partial summaries.
-3. Keep build configuration production-ready (test/report plugins enabled) while removing brittle dependency BOM usage.
-
-This gives lower maintenance cost without losing usability for onboarding and execution.
-
+## CI/CD
+Pipeline at `.github/workflows/ci.yml` performs build, API tests, webhook tests, UI headless execution, and artifact uploads.

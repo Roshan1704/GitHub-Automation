@@ -1,0 +1,48 @@
+name: Stripe Automation CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_UI_EMAIL: ${{ secrets.STRIPE_UI_EMAIL }}
+      STRIPE_UI_PASSWORD: ${{ secrets.STRIPE_UI_PASSWORD }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Build and run API tests
+        run: mvn -B -Ptest -Dgroups=api test
+
+      - name: Start webhook server and run webhook tests
+        run: mvn -B -Ptest -Dgroups=webhook test
+
+      - name: Run UI tests in headless mode
+        run: mvn -B -Ptest -Dbrowser=chrome -Dheadless=true -Dtest=com.stripe.automation.runners.CucumberTestNgRunner test
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+
+      - name: Upload logs and screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-and-screenshots
+          path: |
+            target/screenshots
+            target/surefire-reports
