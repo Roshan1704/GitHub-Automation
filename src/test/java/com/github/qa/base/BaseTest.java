@@ -8,40 +8,47 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public abstract class BaseTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(BaseTest.class);
 
     private static final ThreadLocal<WebDriver> driverThread = new ThreadLocal<>();
     private static final ThreadLocal<WebDriverUtils> utilsThread = new ThreadLocal<>();
     private static final ThreadLocal<GitHubAPIClient> apiClientThread = new ThreadLocal<>();
 
-    private static final String BASE_URL = "https://github.com";
-    private static final int IMPLICIT_WAIT = 10;
+    private static final String DEFAULT_BASE_URL = "https://github.com";
+    private static final int DEFAULT_IMPLICIT_WAIT_SECONDS = 10;
+    private static final int DEFAULT_PAGE_LOAD_TIMEOUT_SECONDS = 30;
+    private static final int DEFAULT_SCRIPT_TIMEOUT_SECONDS = 30;
 
     @BeforeMethod(alwaysRun = true)
     public void setUp() {
+        String browser = System.getProperty("browser", "chrome").toLowerCase(Locale.ROOT);
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "true"));
 
-        // ================= CONFIG =================
-        String browser = System.getProperty("browser", "chrome").toLowerCase();
-        boolean headless = Boolean.parseBoolean(
-                System.getProperty("headless", "true")
-        );
+        logger.info("Initializing test context. browser={}, headless={}", browser, headless);
 
-        // ================= UI =================
         WebDriver driver = createDriver(browser, headless);
 
-        driver.manage().window().maximize();
+        if (!headless) {
+            driver.manage().window().maximize();
+        }
+
         driver.manage().timeouts()
-                .implicitlyWait(Duration.ofSeconds(IMPLICIT_WAIT));
+                .implicitlyWait(Duration.ofSeconds(getIntProperty("implicitWaitSeconds", DEFAULT_IMPLICIT_WAIT_SECONDS)))
+                .pageLoadTimeout(Duration.ofSeconds(getIntProperty("pageLoadTimeoutSeconds", DEFAULT_PAGE_LOAD_TIMEOUT_SECONDS)))
+                .scriptTimeout(Duration.ofSeconds(getIntProperty("scriptTimeoutSeconds", DEFAULT_SCRIPT_TIMEOUT_SECONDS)));
 
         driverThread.set(driver);
         utilsThread.set(new WebDriverUtils(driver));
-
-        // ================= API =================
         apiClientThread.set(new GitHubAPIClient());
     }
 
@@ -57,29 +64,24 @@ public abstract class BaseTest {
         apiClientThread.remove();
     }
 
-    // ================= GETTERS =================
-
     protected WebDriver getDriver() {
-        return driverThread.get();
+        return requireInitialized(driverThread.get(), "WebDriver is not initialized. Did @BeforeMethod run?");
     }
 
     protected WebDriverUtils getUtils() {
-        return utilsThread.get();
+        return requireInitialized(utilsThread.get(), "WebDriverUtils is not initialized. Did @BeforeMethod run?");
     }
 
     protected GitHubAPIClient getApiClient() {
-        return apiClientThread.get();
+        return requireInitialized(apiClientThread.get(), "GitHubAPIClient is not initialized. Did @BeforeMethod run?");
     }
 
     protected String getBaseUrl() {
-        return BASE_URL;
+        return System.getProperty("baseUrl", DEFAULT_BASE_URL);
     }
-
-    // ================= DRIVER FACTORY =================
 
     private WebDriver createDriver(String browser, boolean headless) {
         switch (browser) {
-
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
@@ -89,7 +91,6 @@ public abstract class BaseTest {
                 return new FirefoxDriver(firefoxOptions);
 
             case "chrome":
-            default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
 
@@ -104,6 +105,29 @@ public abstract class BaseTest {
                 }
 
                 return new ChromeDriver(chromeOptions);
+
+            default:
+                throw new IllegalArgumentException("Unsupported browser: " + browser + ". Supported: chrome, firefox");
         }
+    }
+
+    private int getIntProperty(String propertyName, int defaultValue) {
+        String value = System.getProperty(propertyName);
+        if (value == null || value.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            logger.warn("Invalid integer for property {}: {}. Falling back to {}", propertyName, value, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    private <T> T requireInitialized(T value, String message) {
+        if (value == null) {
+            throw new IllegalStateException(message);
+        }
+        return value;
     }
 }
